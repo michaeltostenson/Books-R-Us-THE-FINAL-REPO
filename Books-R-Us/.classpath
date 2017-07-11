@@ -17,5 +17,6 @@
 	<classpathentry kind="lib" path="C:/Users/Chris/wildfly-8.0.0.Final/modules/system/layers/base/javax/servlet/api/main/jboss-servlet-api_3.1_spec-1.0.0.Final.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Chris/git/Books-R-Us-THE-FINAL-REPO/Books-R-Us/WebContent/WEB-INF/lib/freemarker.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Chris/git/Books-R-Us-THE-FINAL-REPO/Books-R-Us/WebContent/WEB-INF/lib/mysql-connector-java-5.1.40-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Chris/Downloads/gson-2.8.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

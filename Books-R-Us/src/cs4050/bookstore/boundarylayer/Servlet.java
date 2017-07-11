@@ -4,12 +4,13 @@ import java.io.Writer;
 import java.sql.SQLException;
 import java.util.List;
 
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
 
 import cs4050.bookstore.logiclayer.UserLogicImpl;
 import cs4050.bookstore.objectlayer.User;
@@ -173,5 +174,18 @@ public class Servlet extends HttpServlet {
 		 */
 		protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 			doGet(request, response);
+		}
+		
+		/**
+		 * Helper method to return any object as a JSON-type response from the servlet
+		 * @param response outgoing response from servlet
+		 * @param objToEncode object to encode as a JSON-type
+		 * @throws IOException 
+		 */
+		protected void sendJsonResponse(HttpServletResponse response, Object objToEncode) throws IOException{
+		    String json = new Gson().toJson(objToEncode);
+		    response.setContentType("application/json");
+		    response.setCharacterEncoding("UTF-8");
+		    response.getWriter().write(json);
 		}
 }
