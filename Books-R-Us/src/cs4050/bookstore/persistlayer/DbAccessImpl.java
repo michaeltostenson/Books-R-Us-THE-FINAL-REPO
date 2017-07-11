@@ -11,6 +11,7 @@ public class DbAccessImpl  {
 	
 	protected static Connection con = null;
 	protected static Statement stmt = null;
+	
 	protected static PreparedStatement pstmt = null;
 	protected static ResultSet result = null;
 	
@@ -73,6 +74,7 @@ public class DbAccessImpl  {
 	 * @return the amount of rows affected by this query.
 	 */
 	public static int create (String query) {
+		System.out.println(query);
 		int rows = 0;
 		try {
 			con = connect();

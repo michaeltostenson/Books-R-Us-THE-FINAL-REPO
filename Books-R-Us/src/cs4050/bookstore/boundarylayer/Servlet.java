@@ -96,12 +96,14 @@ public class Servlet extends HttpServlet {
 
 			//begin checks to see what the input is
 			if (register!= null){ // check to see if user clicked the register button on the sign up page
+				System.out.println("Register triggered");
 				String email = request.getParameter("email");
 				String username = request.getParameter("username");
 				String password = request.getParameter("password");
 				String fname = request.getParameter("fname");
 				String lname = request.getParameter("lname");
 				
+				System.out.println("QUERY VALUES: " + email + " " + username + " " + password + " " + fname + " " + lname);
 				User user = new User(fname, lname, email, username, password, 2);
 				UserLogicImpl newUser = new UserLogicImpl();
 				int r = newUser.insertUser(user);
@@ -116,6 +118,7 @@ public class Servlet extends HttpServlet {
 				}
 								
 			} else if (login != null){
+				System.out.println("Login triggered");
 				String username = request.getParameter("username");
 				String password = request.getParameter("password");
 
