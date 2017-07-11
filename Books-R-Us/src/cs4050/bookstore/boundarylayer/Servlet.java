@@ -4,12 +4,13 @@ import java.io.Writer;
 import java.sql.SQLException;
 import java.util.List;
 
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
 
 import cs4050.bookstore.logiclayer.UserLogicImpl;
 import cs4050.bookstore.objectlayer.User;
@@ -96,12 +97,14 @@ public class Servlet extends HttpServlet {
 
 			//begin checks to see what the input is
 			if (register!= null){ // check to see if user clicked the register button on the sign up page
+				System.out.println("Register triggered");
 				String email = request.getParameter("email");
 				String username = request.getParameter("username");
 				String password = request.getParameter("password");
 				String fname = request.getParameter("fname");
 				String lname = request.getParameter("lname");
 				
+				System.out.println("QUERY VALUES: " + email + " " + username + " " + password + " " + fname + " " + lname);
 				User user = new User(fname, lname, email, username, password, 2);
 				UserLogicImpl newUser = new UserLogicImpl();
 				int r = newUser.insertUser(user);
@@ -116,6 +119,7 @@ public class Servlet extends HttpServlet {
 				}
 								
 			} else if (login != null){
+				System.out.println("Login triggered");
 				String username = request.getParameter("username");
 				String password = request.getParameter("password");
 
@@ -170,5 +174,18 @@ public class Servlet extends HttpServlet {
 		 */
 		protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 			doGet(request, response);
+		}
+		
+		/**
+		 * Helper method to return any object as a JSON-type response from the servlet
+		 * @param response outgoing response from servlet
+		 * @param objToEncode object to encode as a JSON-type
+		 * @throws IOException 
+		 */
+		protected void sendJsonResponse(HttpServletResponse response, Object objToEncode) throws IOException{
+		    String json = new Gson().toJson(objToEncode);
+		    response.setContentType("application/json");
+		    response.setCharacterEncoding("UTF-8");
+		    response.getWriter().write(json);
 		}
 }
