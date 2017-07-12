@@ -15,6 +15,18 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+USE master
+GO
+ --Create a database
+ IF EXISTS(SELECT name FROM sys.databases
+     WHERE name = 'bookstoredb')
+     DROP DATABASE bookstoredb
+ GO
+
+ CREATE DATABASE bookstoredb;
+ USE bookstoredb;
+
+
 --
 -- Table structure for table `book`
 --
