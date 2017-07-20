@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `bookstoredb` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `bookstoredb`;
 -- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
 -- Host: localhost    Database: bookstoredb
@@ -15,18 +17,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-USE master
-GO
- --Create a database
- IF EXISTS(SELECT name FROM sys.databases
-     WHERE name = 'bookstoredb')
-     DROP DATABASE bookstoredb
- GO
-
- CREATE DATABASE bookstoredb;
- USE bookstoredb;
-
-
 --
 -- Table structure for table `book`
 --
@@ -37,12 +27,13 @@ DROP TABLE IF EXISTS `book`;
 CREATE TABLE `book` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL,
-  `author` varchar(100) DEFAULT NULL,
-  `publisher` varchar(100) DEFAULT NULL,
-  `year` int(11) DEFAULT NULL,
-  `price` float DEFAULT NULL,
-  `stock` int(11) DEFAULT NULL,
-  `sold` int(11) DEFAULT NULL,
+  `author` varchar(100) DEFAULT NULL COMMENT 'Holds name of books author',
+  `publisher` varchar(100) DEFAULT NULL COMMENT 'Holds name of book publisher',
+  `genre` varchar(45) DEFAULT NULL,
+  `year` int(11) DEFAULT NULL COMMENT 'Holds year book written',
+  `price` double DEFAULT NULL COMMENT 'Holds book price',
+  `stock` int(11) DEFAULT NULL COMMENT 'Holds current amount in inventory',
+  `sold` int(11) DEFAULT NULL COMMENT 'Holds number sold',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -64,9 +55,9 @@ DROP TABLE IF EXISTS `booksales`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `booksales` (
-  `book_id` int(11) NOT NULL,
-  `numSold` int(11) DEFAULT NULL,
-  `validDate` date DEFAULT NULL,
+  `book_id` int(11) NOT NULL COMMENT 'Foreign Key, Reference book(id)',
+  `numSold` int(11) DEFAULT NULL COMMENT 'Number of specified book sold',
+  `validDate` date DEFAULT NULL COMMENT 'Date on which sales took place',
   KEY `book_id_idx` (`book_id`),
   CONSTRAINT `book_id` FOREIGN KEY (`book_id`) REFERENCES `book` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -89,14 +80,10 @@ DROP TABLE IF EXISTS `cart`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cart` (
-  `user_id` int(11) DEFAULT NULL,
-  `order_id` int(11) DEFAULT NULL,
-  `totalPrice` double DEFAULT NULL,
-  `totalQty` int(11) DEFAULT NULL,
-  KEY `user_id` (`user_id`),
-  KEY `cart_iofk_1_idx` (`order_id`),
-  CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `cart_iofk_1` FOREIGN KEY (`order_id`) REFERENCES `order` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `user_id_idx` FOREIGN KEY (`id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -117,11 +104,11 @@ DROP TABLE IF EXISTS `dayreport`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dayreport` (
-  `cashIn` double DEFAULT NULL,
-  `cashOut` double DEFAULT NULL,
-  `cardIn` double DEFAULT NULL,
-  `cardOut` double DEFAULT NULL,
-  `validDate` date DEFAULT NULL
+  `cashIn` double DEFAULT NULL COMMENT 'Money made by cash transactions',
+  `cashOut` double DEFAULT NULL COMMENT 'Money lost by cash transactions',
+  `cardIn` double DEFAULT NULL COMMENT 'Money made by electronic transactions',
+  `cardOut` double DEFAULT NULL COMMENT 'Money lost by electronic transactions',
+  `validDate` date DEFAULT NULL COMMENT 'Day these transactions took place'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -135,82 +122,27 @@ LOCK TABLES `dayreport` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `genre`
+-- Table structure for table `item`
 --
 
-DROP TABLE IF EXISTS `genre`;
+DROP TABLE IF EXISTS `item`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `genre` (
-  `book_id` int(11) NOT NULL,
-  `genre` varchar(45) DEFAULT NULL,
-  KEY `book_id_idx` (`book_id`),
-  CONSTRAINT `genre_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `book` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+CREATE TABLE `item` (
+  `cart_id` int(11) NOT NULL,
+  `book_id` int(11) DEFAULT NULL,
+  `qty` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`cart_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `genre`
+-- Dumping data for table `item`
 --
 
-LOCK TABLES `genre` WRITE;
-/*!40000 ALTER TABLE `genre` DISABLE KEYS */;
-/*!40000 ALTER TABLE `genre` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `order`
---
-
-DROP TABLE IF EXISTS `order`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `order` (
-  `id` int(11) NOT NULL COMMENT 'id intended to not auto increment, user_id and id are composite key',
-  `user_id` int(11) NOT NULL,
-  `book_id` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `book_id` (`book_id`),
-  CONSTRAINT `order_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `order_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `book` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `order`
---
-
-LOCK TABLES `order` WRITE;
-/*!40000 ALTER TABLE `order` DISABLE KEYS */;
-/*!40000 ALTER TABLE `order` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `orderhistory`
---
-
-DROP TABLE IF EXISTS `orderhistory`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `orderhistory` (
-  `user_id` int(11) NOT NULL,
-  `order_id` int(11) DEFAULT NULL,
-  `orderDate` date DEFAULT NULL,
-  PRIMARY KEY (`user_id`),
-  KEY `order_id_idx` (`order_id`),
-  CONSTRAINT `order_id` FOREIGN KEY (`order_id`) REFERENCES `order` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `orderhistory`
---
-
-LOCK TABLES `orderhistory` WRITE;
-/*!40000 ALTER TABLE `orderhistory` DISABLE KEYS */;
-/*!40000 ALTER TABLE `orderhistory` ENABLE KEYS */;
+LOCK TABLES `item` WRITE;
+/*!40000 ALTER TABLE `item` DISABLE KEYS */;
+/*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -277,6 +209,7 @@ CREATE TABLE `publishersales` (
   `publisher_id` int(11) NOT NULL,
   `numSold` int(11) DEFAULT NULL,
   `netTotal` double DEFAULT NULL,
+  `validDate` date NOT NULL,
   KEY `publisher_id_idx` (`publisher_id`),
   CONSTRAINT `publisher_id` FOREIGN KEY (`publisher_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -306,8 +239,8 @@ CREATE TABLE `user` (
   `password` varchar(45) NOT NULL,
   `email` varchar(45) NOT NULL,
   `type` int(11) DEFAULT NULL,
-  `cardSaved` int(11) DEFAULT NULL,
-  `shipAddr` varchar(45) DEFAULT NULL,
+  `shipAddr` varchar(100) DEFAULT NULL,
+  `usercol` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -331,4 +264,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-07-10 16:27:45
+-- Dump completed on 2017-07-20 15:43:16
